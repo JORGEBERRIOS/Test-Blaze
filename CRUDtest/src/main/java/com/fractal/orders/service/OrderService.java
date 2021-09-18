@@ -10,8 +10,9 @@ import com.fractal.orders.entity.Taxes;
 public interface OrderService {
     void createOrder(OrderDTO orderDTO);
     List<OrderDTO> getAllOrders();
-    OrderDTO addItem(Long orderId,ItemDTO itemsDto);
+    OrderDTO addItem(Long orderId,ItemDTO itemDto);
     Taxes getTaxes(Long orderId);
     OrderDTO getOrder(Long orderId);
-    List<Item> getItems(Long orderId);
+    void deleteItem(Long orderId,Long itemId);
+    List<ItemDTO> getItems(Long orderId);
 }

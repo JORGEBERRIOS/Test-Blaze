@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +50,7 @@ public class OrderController {
     logger.info("END...... create-order   [POST]");
     return new ResponseEntity<>(orderDTO,status);
   }
-  @PatchMapping("/{id}")
+  @PatchMapping("items/{id}")
   public  ResponseEntity<ItemDTO> addItem(@PathVariable Long id,@RequestBody ItemDTO itemDTO){
     logger.info("START ...... add-item [POST]{}");
     HttpStatus status=null;
@@ -64,6 +65,21 @@ public class OrderController {
     }
     logger.info("END...... add-item   [POST]");
     return new ResponseEntity<ItemDTO>(itemDTO,status);
+  }
+  @DeleteMapping("{orderId}/items/{itemId}")
+  public  ResponseEntity<ItemDTO> deleteItem(@PathVariable String orderId,@PathVariable String itemId ){
+    logger.info("START ...... delete-item [DELETE]{}",orderId+" "+itemId);
+    HttpStatus status=null;
+    try {
+      orderService.deleteItem(Long.valueOf(orderId), Long.valueOf(itemId));
+      status=HttpStatus.OK;
+    }catch(Exception e) {
+      status=HttpStatus.INTERNAL_SERVER_ERROR;
+      logger.error("Exception ocurred in add item {}",e.getMessage());
+      
+    }
+    logger.info("END...... delete   [DELETE]");
+    return new ResponseEntity<ItemDTO>(status);
   }
   @GetMapping("/taxes/{id}")
   public  ResponseEntity<Taxes> getTaxes(@PathVariable Long id){
@@ -105,15 +121,15 @@ public class OrderController {
   */
   
   @GetMapping("/items/{orderId}")
-  public OrderDTO getItems(String orderId) {
+  public List<ItemDTO> getItems(@PathVariable String orderId) {
     logger.info("START ...... list-all-Orders [GET]{}");
-    OrderDTO orders=orderService.getOrder(Long.valueOf(orderId));
+    List<ItemDTO> items=orderService.getItems(Long.valueOf(orderId));
     logger.info("END...... list-all-Orders   [GET]");
-    return orders;
+    return items;
 
   }
   @GetMapping("/{orderId}")
-  public OrderDTO getOrder(String orderId) {
+  public OrderDTO getOrder(@PathVariable String orderId) {
     logger.info("START ...... get-order [GET]{}");
     OrderDTO order=orderService.getOrder(Long.valueOf(orderId));
     logger.info("END...... get-order   [GET]");

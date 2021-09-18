@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -88,41 +89,37 @@ public class OrderServiceImpl implements OrderService {
     Double subTotal = items.stream().mapToDouble(i -> i.getCost()).sum();
     Double total = subTotal;
 
-    List<Double> taxes=new ArrayList<>();
+    List<Double> taxes = new ArrayList<>();
     taxes.add(cityTax);
     taxes.add(countyTax);
     taxes.add(stateTax);
     taxes.add(federalTax);
-    List<Double> totalTaxes=new ArrayList<>();
-    
+    List<Double> totalTaxes = new ArrayList<>();
+
     Double aux;
-    for(Double tax:taxes) {
-       aux= total * tax/(double) 100;
-       total=total+aux;
-       totalTaxes.add(aux);
+    for (Double tax : taxes) {
+      aux = total * tax / (double) 100;
+      total = total + aux;
+      totalTaxes.add(aux);
     }
-    
-   /* HashMap<Double, Double> taxes = new HashMap<>();
-    Doubl e total = subTotal;
-    Double totalTax = null;
-    taxes.put(cityTax, (double) 0);
-    taxes.put(countyTax, (double) 0);
-    taxes.put(stateTax, (double) 0);
-    taxes.put(federalTax, (double) 0);
-    Set<Double> keys=taxes.keySet();
-    for (Double key:keys ) {
-      Double tax = total * key/ (double) 100;
-      total=total+tax;
-      taxes.put(key,tax);
-    }
-    */
+
+    /*
+     * HashMap<Double, Double> taxes = new HashMap<>(); Doubl e total = subTotal;
+     * Double totalTax = null; taxes.put(cityTax, (double) 0); taxes.put(countyTax,
+     * (double) 0); taxes.put(stateTax, (double) 0); taxes.put(federalTax, (double)
+     * 0); Set<Double> keys=taxes.keySet(); for (Double key:keys ) { Double tax =
+     * total * key/ (double) 100; total=total+tax; taxes.put(key,tax); }
+     */
     Double totalTax = totalTaxes.stream().reduce((double) 0, Double::sum);
     return Taxes.builder().subtotal(subTotal).total(total).totalTax(totalTax).cityTax(totalTaxes.get(0))
         .countyTax(totalTaxes.get(1)).stateTax(totalTaxes.get(2)).federalTax(totalTaxes.get(3)).build();
     /*
-     *     return Taxes.builder().subtotal(subTotal).total(total).totalTax(totalTax).cityTax(taxes.get(cityTax))
-        .countyTax(taxes.get(countyTax)).stateTax(taxes.get(stateTax)).federalTax(taxes.get(federalTax)).build();
-
+     * return
+     * Taxes.builder().subtotal(subTotal).total(total).totalTax(totalTax).cityTax(
+     * taxes.get(cityTax))
+     * .countyTax(taxes.get(countyTax)).stateTax(taxes.get(stateTax)).federalTax(
+     * taxes.get(federalTax)).build();
+     * 
      * Double orderCityTax=total*cityTax;
      * 
      * total=subTotal+orderCityTax;
@@ -142,23 +139,32 @@ public class OrderServiceImpl implements OrderService {
      */
 
   }
- 
+
   @Override
   public Taxes getTaxes(Long orderId) {
     Order order = orderRepository.findByOrderId(orderId);
     return order.getTaxes();
   }
+
   @Override
   public OrderDTO getOrder(Long orderId) {
-    Order order=orderRepository.findByOrderId(orderId);
+    Order order = orderRepository.findByOrderId(orderId);
     return orderConverter.toDTO(order);
   }
-  @Override
-  public List<Item> getItems(Long orderId){
-    Order order=orderRepository.findByOrderId(orderId);
-    return order.getItems();
-  }
-  
 
+  @Override
+  public List<ItemDTO> getItems(Long orderId) {
+    Order order = orderRepository.findByOrderId(orderId);
+    List<ItemDTO> items = itemConverter.toDtoList(order.getItems());
+    return items;
+  }
+
+  @Override
+  public void deleteItem(Long orderId, Long itemId) {
+    Order order = orderRepository.findByOrderId(orderId);
+    Item item = order.getItems().stream().filter(p -> p.getItemId() == itemId).collect(Collectors.toList()).get(0);
+    order.getItems().remove(item);
+    orderRepository.save(order);
+  }
 
 }
