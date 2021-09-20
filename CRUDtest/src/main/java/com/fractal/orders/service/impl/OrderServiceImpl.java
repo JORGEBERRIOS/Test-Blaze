@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,8 @@ public class OrderServiceImpl implements OrderService {
   private Double stateTax;
   @Value("${order.taxes.federalTax}")
   private Double federalTax;
-
+  
+  @Autowired
   public OrderServiceImpl(OrderRepository orderRepository, OrderConverter orderConverter, ItemConverter itemConverter) {
     this.orderRepository = orderRepository;
     this.orderConverter = orderConverter;
@@ -43,16 +45,10 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public void createOrder(OrderDTO orderDTO) {
+  public OrderDTO createOrder(OrderDTO orderDTO) {
     Order order = orderConverter.toEntity(orderDTO);
     order.setId(new Order().getId());
-    orderRepository.save(order);
-    /*
-     * Subtotal = $100 City tax=$100*10%=$10 County tax= $110*5%=$5.5
-     * 
-     * State tax=$115.50*8%=$9.24 Federal tax=$124.74*2%=$2.49 Total
-     * taxes=$10+$5.5+$9.24+$2.49=$27.23 Total=$127.23
-     */
+    return orderConverter.toDTO(orderRepository.save(order));
   }
 
   @Override
@@ -63,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public OrderDTO addItem(Long orderId, ItemDTO itemDto) {
+  public List<ItemDTO> addItem(Long orderId, ItemDTO itemDto) {
     Order order = orderRepository.findByOrderId(orderId);
     Item item = itemConverter.toEntity(itemDto);
 
@@ -79,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
     order.setTaxes(taxes);
     order.setTotal(taxes.getTotal());
 
-    return orderConverter.toDTO(orderRepository.save(order));
+    return orderConverter.toDTO(orderRepository.save(order)).getItems();
   }
 
   private Taxes calculateOrderTaxes(List<Item> items) {
@@ -165,6 +161,14 @@ public class OrderServiceImpl implements OrderService {
     Item item = order.getItems().stream().filter(p -> p.getItemId() == itemId).collect(Collectors.toList()).get(0);
     order.getItems().remove(item);
     orderRepository.save(order);
+  }
+
+  @Override
+  public void deleteOrder(Long orderId) {
+    // TODO Auto-generated method stub
+    Order order = orderRepository.findByOrderId(orderId);
+    orderRepository.delete(order);
+    
   }
 
 }

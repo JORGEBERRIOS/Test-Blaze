@@ -2,6 +2,7 @@ package com.fractal.orders.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fractal.orders.converter.ProductConverter;
@@ -13,6 +14,7 @@ import com.fractal.orders.service.ProductService;
 public class ProductServiceImpl implements  ProductService{
   private ProductRepository productRepository;
   private ProductConverter productConverter;
+  @Autowired
   public ProductServiceImpl(ProductRepository productRepository,ProductConverter productConverter) {
     this.productRepository=productRepository;
     this.productConverter=productConverter;
@@ -23,10 +25,11 @@ public class ProductServiceImpl implements  ProductService{
         
   }
   @Override
-  public void createProduct(ProductDTO productDTO) {
+  public ProductDTO createProduct(ProductDTO productDTO) {
     Product product=productConverter.toEntity(productDTO);
     product.setId(new Product().getId()); 
-    productRepository.save(product);
+    return productConverter.toDTO(productRepository.save(product));   
+    
   }
 
 

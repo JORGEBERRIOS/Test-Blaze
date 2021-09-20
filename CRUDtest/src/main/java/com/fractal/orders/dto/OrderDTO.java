@@ -6,6 +6,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fractal.orders.entity.Taxes;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,4 +29,8 @@ public class OrderDTO {
   private Double total;
   private List<ItemDTO> items;
   private Taxes taxes;
+  @Override
+  public String toString() {
+    return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
+  }
 }

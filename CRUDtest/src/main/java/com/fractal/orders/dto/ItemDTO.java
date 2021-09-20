@@ -1,5 +1,7 @@
 package com.fractal.orders.dto;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.AllArgsConstructor;
@@ -20,5 +22,9 @@ public class ItemDTO {
   @Field("unit_price")
   private Double unitPrice;
   private Double cost;
-
+  @Override
+  public String toString() {
+    return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
+  }
+  
 }

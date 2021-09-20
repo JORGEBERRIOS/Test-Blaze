@@ -6,7 +6,7 @@ import com.fractal.orders.dto.ProductDTO;
 
 public interface ProductService {
     List<ProductDTO> getAllProducts();
-    void createProduct(ProductDTO productDTO);
+    ProductDTO createProduct(ProductDTO productDTO);
     void editProduct(ProductDTO productDTO);
     void deleteProduct(Long productId);
 }

@@ -55,7 +55,7 @@ const Orders = () => {
                 <td>{order.consumer}</td>
                 <td>{order.status}</td>
                 <td>{order.date}</td>
-                <td> {order.total}</td>
+                <td>${order.total}</td>
                 <td>
                   <Link
                     class="btn btn-outline-primary mr-2"
@@ -76,7 +76,29 @@ const Orders = () => {
           </tbody>
         </table>
       </div>
+
+      <nav aria-label="..." style={{float: 'right'}}> 
+        <ul class="pagination">
+          <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+          </li>
+          <li class="page-item active">
+            <span class="page-link">
+              1
+              <span class="sr-only">(current)</span>
+            </span>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+        
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </nav>
+
     </div>
+    
   );
 };
 

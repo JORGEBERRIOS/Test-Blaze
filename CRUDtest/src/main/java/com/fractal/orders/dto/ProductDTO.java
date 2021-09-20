@@ -1,5 +1,7 @@
 package com.fractal.orders.dto;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +20,9 @@ public class ProductDTO {
     private String category;
     private Double price;
     private String status;
+    @Override
+    public String toString() {
+      return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
+    }
 
 }

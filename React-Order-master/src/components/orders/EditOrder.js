@@ -5,6 +5,8 @@ import { Link, useParams } from "react-router-dom";
 
 const EditOrder = () => {
   const [items, setItem] = useState([]);
+  const [isHidden, setIsHidden] = React.useState(false)
+
   const [taxes, setTaxes] = useState({
     subtotal:"",
     cityTax:"",
@@ -22,7 +24,6 @@ const EditOrder = () => {
     total: "",
     items: ""
   });  
-  let {flagHideTaxes}=true;
   const { id } = useParams();
   
   useEffect(() => {
@@ -44,10 +45,12 @@ const EditOrder = () => {
   const loadItems = async () => {
     const result = await axios.get(`http://localhost:8020/orders/items/${id}`);
     if(result.data.length!=0){
+    
+      setIsHidden(true)
       setItem(result.data.reverse());
-      flagHideTaxes=true;
-    }else{
-      flagHideTaxes=false;
+    }
+    else{
+      setIsHidden(false)
     }
     
   };
@@ -57,14 +60,7 @@ const EditOrder = () => {
     loadItems();
   };
 
-  /*function hideTaxes()  {
-    if(flagHideTaxes){
-      document.getElementById("taxes").style.visibility="hidden";  
-
-    }
-
-  }*/
-
+ 
 
 
 
@@ -72,6 +68,11 @@ const EditOrder = () => {
   return (
     <div className="container">
     <div className="py-4">
+      <Link  to={"/orders"}>
+                <button type="button" class="btn btn-secondary btn-lg" style={{float: 'right'}}>
+                        Back
+                </button> 
+      </Link>
       <h1>Order Nº  {id}</h1>
       <br></br> 
       <table>
@@ -141,11 +142,11 @@ const EditOrder = () => {
                 <button type="button" class="btn btn-primary" style={{float: 'right'}}>
                         Add Item
                 </button> 
-                </Link>
+      </Link>
 
     </div>
     <br></br>
-    {{flagHideTaxes} &&( <table style={{float: 'right'}} id="taxes" >
+    {isHidden &&( <table style={{float: 'right'}} id="taxes" >
         <tr>
         </tr>
         <tr>
@@ -193,6 +194,8 @@ const EditOrder = () => {
           <td align="right" style={{fontSize:'30px'}} >$  {taxes.total}</td>
         </tr>
       </table>)}
+
+
    
   </div>
 
